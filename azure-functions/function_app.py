@@ -34,7 +34,7 @@ def IngestNewGithubEvents():
     connection = mssql_python.connect(SQL_CONNECTION_STRING)
 
     print(f"Checking if Pending Event IDs already exist in {database_name}...")
-    fetch_existing_ids_query = connection.execute(f"SELECT id FROM github_events WHERE id IN {"("+",".join(str(i) for i in pending_event_ids)+")"};");
+    fetch_existing_ids_query = connection.execute(f"SELECT id FROM github_events WHERE id IN {'('+','.join(str(i) for i in pending_event_ids)+')'};");
     for row in fetch_existing_ids_query.fetchall():
         if row[0] in pending_event_ids:
             print(f"Event ID {row[0]} already exists. Removing from pending list...")
@@ -46,7 +46,7 @@ def IngestNewGithubEvents():
 
         for event in events:
             if int(event["id"]) in pending_event_ids:
-                insert_all_pending_events_query = insert_all_pending_events_query + f"({int(event["id"])}, '{json.dumps(event)}', '{event["created_at"]}'),"
+                insert_all_pending_events_query = insert_all_pending_events_query + f"({int(event['id'])}, '{json.dumps(event)}', '{event['created_at']}'),"
         insert_all_pending_events_query = (insert_all_pending_events_query + ";").replace(",;",";")
 
         connection.execute(insert_all_pending_events_query)
