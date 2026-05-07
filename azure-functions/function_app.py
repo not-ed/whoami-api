@@ -13,6 +13,7 @@ def IngestNewGithubEvents():
     database_password = os.getenv("DatabasePassword", None)
     if None in [github_username, database_server_name, database_name, database_username, database_password]:
         logging.info("Missing required configuration. Skipping run...")
+        return
 
     logging.info(f"Fething public GitHub events for {github_username}...")
     events_response = requests.get(f"https://api.github.com/users/{github_username}/events", headers={"X-GitHub-Api-Version": "2026-03-10"})
