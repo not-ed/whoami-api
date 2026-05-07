@@ -15,7 +15,7 @@ def IngestNewGithubEvents():
         logging.info("Missing required configuration. Skipping run...")
         return
 
-    logging.info(f"Fething public GitHub events for {github_username}...")
+    logging.info(f"Fetching public GitHub events for {github_username}...")
     events_response = requests.get(f"https://api.github.com/users/{github_username}/events", headers={"X-GitHub-Api-Version": "2026-03-10"})
     if not events_response.ok:
         return
