@@ -9,7 +9,6 @@ A local `.tfvars` file needs to be created in your environment to pass through v
 
 | Variable | Description |
 |---|---|
-| `azure-tenant-id ` | Your Azure Tenant ID, which should be a GUID.
 | `database-administrator-username` | The desired username of the Admin user for the SQL Server instance provisioned in Azure.
 | `database-administrator-password` | The desired password of the Admin user for the SQL Server instance provisioned in Azure. This password must satisfy Azure's [password complexity rules](https://learn.microsoft.com/en-us/sql/relational-databases/security/password-policy#password-complexity).
 

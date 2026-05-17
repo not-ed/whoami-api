@@ -14,14 +14,11 @@ provider "azurerm" {
   }
 }
 
+data "azurerm_client_config" "current" {}
+
 variable "application-name" {
   type    = string
   default = "whoami API"
-}
-
-variable "azure-tenant-id" {
-  type      = string
-  sensitive = true
 }
 
 variable "database-administrator-username" {
@@ -50,7 +47,7 @@ resource "azurerm_key_vault" "key-vault-whoami-api" {
     application = var.application-name
   }
   sku_name                      = "standard"
-  tenant_id                     = var.azure-tenant-id
+  tenant_id                     = data.azurerm_client_config.current.tenant_id
   public_network_access_enabled = true
   rbac_authorization_enabled    = true
 }
