@@ -5,6 +5,14 @@ terraform {
       version = "4.72.0"
     }
   }
+
+  backend "azurerm" {
+    use_cli              = true
+    use_azuread_auth     = true
+    storage_account_name = ""
+    container_name       = ""
+    key                  = "whoami-api.terraform.tfstate"
+  }
 }
 
 provider "azurerm" {
