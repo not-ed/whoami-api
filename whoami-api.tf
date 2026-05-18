@@ -59,43 +59,43 @@ resource "azurerm_key_vault" "key-vault-whoami-api" {
 }
 
 resource "azurerm_role_assignment" "role-assignment-whoami-api-key-vault-administrator" {
-  scope = data.azurerm_subscription.primary.id
+  scope                = data.azurerm_subscription.primary.id
   role_definition_name = "Key Vault Administrator"
-  principal_id = data.azurerm_client_config.current.object_id
+  principal_id         = data.azurerm_client_config.current.object_id
 }
 
 resource "azurerm_key_vault_secret" "key-vault-secret-whoami-api-github-username" {
   key_vault_id = azurerm_key_vault.key-vault-whoami-api.id
-  name = "Config-GitHub-Username"
-  value = var.github-username
+  name         = "Config-GitHub-Username"
+  value        = var.github-username
   content_type = "The GitHub username of the User whose events are being stored during ingestion"
 }
 
 resource "azurerm_key_vault_secret" "key-vault-secret-whoami-api-database-name" {
   key_vault_id = azurerm_key_vault.key-vault-whoami-api.id
-  name = "Config-DatabaseName"
-  value = azurerm_mssql_database.mssql-database-whoami-api.name #4124
+  name         = "Config-DatabaseName"
+  value        = azurerm_mssql_database.mssql-database-whoami-api.name #4124
   content_type = "Name of the SQL Database to connect to"
 }
 
 resource "azurerm_key_vault_secret" "key-vault-secret-whoami-api-database-password" {
   key_vault_id = azurerm_key_vault.key-vault-whoami-api.id
-  name = "Config-DatabasePassword"
-  value = var.database-administrator-password
+  name         = "Config-DatabasePassword"
+  value        = var.database-administrator-password
   content_type = "The password of the user used to connect to the SQL Server"
 }
 
 resource "azurerm_key_vault_secret" "key-vault-secret-whoami-api-database-server-name" {
   key_vault_id = azurerm_key_vault.key-vault-whoami-api.id
-  name = "Config-DatabaseServerName"
-  value = "${azurerm_mssql_database.mssql-database-whoami-api.name}.database.windows.net"
+  name         = "Config-DatabaseServerName"
+  value        = "${azurerm_mssql_database.mssql-database-whoami-api.name}.database.windows.net"
   content_type = "Full Database Server Name / URL (e.g. *.database.windows.net)"
 }
 
 resource "azurerm_key_vault_secret" "key-vault-secret-whoami-api-database-username" {
   key_vault_id = azurerm_key_vault.key-vault-whoami-api.id
-  name = "Config-DatabaseUsername"
-  value = var.database-administrator-username
+  name         = "Config-DatabaseUsername"
+  value        = var.database-administrator-username
   content_type = "The username used for connecting to the SQL Server"
 }
 
