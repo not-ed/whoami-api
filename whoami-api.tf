@@ -169,6 +169,11 @@ resource "azurerm_storage_account" "storage-account-whoami-api" {
   public_network_access_enabled   = true
 }
 
+resource "azurerm_storage_container" "storage-container-whoami-api-functions" {
+  name = "functions"
+  storage_account_id = azurerm_storage_account.storage-account-whoami-api.id
+}
+
 resource "azurerm_service_plan" "service-plan-whoami-api" {
   name                = "whoami-service-plan"
   location            = "ukwest" # Moved to ukwest due to SKU quota / availability limits in uksouth
@@ -232,7 +237,7 @@ resource "azurerm_function_app_flex_consumption" "function-app-flex-consumption-
   service_plan_id               = azurerm_service_plan.service-plan-whoami-api-functions.id
   storage_container_type        = "blobContainer"
   storage_authentication_type   = "StorageAccountConnectionString"
-  storage_container_endpoint    = azurerm_storage_account.storage-account-whoami-api.primary_blob_endpoint
+  storage_container_endpoint    = "${azurerm_storage_account.storage-account-whoami-api.primary_blob_endpoint}${azurerm_storage_container.storage-container-whoami-api-functions.name}"
   storage_access_key            = azurerm_storage_account.storage-account-whoami-api.primary_access_key
 
   identity {
