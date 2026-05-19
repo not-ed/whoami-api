@@ -102,7 +102,7 @@ resource "azurerm_key_vault_secret" "key-vault-secret-whoami-api-database-passwo
 resource "azurerm_key_vault_secret" "key-vault-secret-whoami-api-database-server-name" {
   key_vault_id = azurerm_key_vault.key-vault-whoami-api.id
   name         = "Config-DatabaseServerName"
-  value        = "${azurerm_mssql_database.mssql-database-whoami-api.name}.database.windows.net"
+  value        = azurerm_mssql_server.mssql-server-whoami-api.fully_qualified_domain_name
   content_type = "Full Database Server Name / URL (e.g. *.database.windows.net)"
 }
 
@@ -170,7 +170,7 @@ resource "azurerm_storage_account" "storage-account-whoami-api" {
 }
 
 resource "azurerm_storage_container" "storage-container-whoami-api-functions" {
-  name = "functions"
+  name               = "functions"
   storage_account_id = azurerm_storage_account.storage-account-whoami-api.id
 }
 
