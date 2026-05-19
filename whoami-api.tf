@@ -72,6 +72,12 @@ resource "azurerm_role_assignment" "role-assignment-whoami-api-key-vault-adminis
   principal_id         = data.azurerm_client_config.current.object_id
 }
 
+resource "azurerm_role_assignment" "role-assignment-whoami-api-functions-secrets-user" {
+  scope                = data.azurerm_subscription.primary.id
+  role_definition_name = "Key Vault Secrets User"
+  principal_id         = azurerm_function_app_flex_consumption.function-app-flex-consumption-whoami-api.identity[0].principal_id
+}
+
 resource "azurerm_key_vault_secret" "key-vault-secret-whoami-api-github-username" {
   key_vault_id = azurerm_key_vault.key-vault-whoami-api.id
   name         = "Config-GitHub-Username"
@@ -82,7 +88,7 @@ resource "azurerm_key_vault_secret" "key-vault-secret-whoami-api-github-username
 resource "azurerm_key_vault_secret" "key-vault-secret-whoami-api-database-name" {
   key_vault_id = azurerm_key_vault.key-vault-whoami-api.id
   name         = "Config-DatabaseName"
-  value        = azurerm_mssql_database.mssql-database-whoami-api.name #4124
+  value        = azurerm_mssql_database.mssql-database-whoami-api.name
   content_type = "Name of the SQL Database to connect to"
 }
 
@@ -228,6 +234,18 @@ resource "azurerm_function_app_flex_consumption" "function-app-flex-consumption-
   storage_authentication_type   = "StorageAccountConnectionString"
   storage_container_endpoint    = azurerm_storage_account.storage-account-whoami-api.primary_blob_endpoint
   storage_access_key            = azurerm_storage_account.storage-account-whoami-api.primary_access_key
+
+  identity {
+    type = "SystemAssigned"
+  }
+
+  app_settings = {
+    "DatabaseName"       = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.key-vault-secret-whoami-api-database-name.versionless_id})"
+    "DatabaseServerName" = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.key-vault-secret-whoami-api-database-server-name.versionless_id})"
+    "DatabaseUsername"   = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.key-vault-secret-whoami-api-database-username.versionless_id})"
+    "DatabasePassword"   = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.key-vault-secret-whoami-api-database-password.versionless_id})"
+    "GitHubUsername"     = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.key-vault-secret-whoami-api-github-username.versionless_id})"
+  }
 
   site_config {
     worker_count = 1
