@@ -209,3 +209,6 @@ FakesAssemblies/
 # JetBrains Rider
 *.sln.iml
 .idea/
+
+# Local settings files
+appsettings.Development.json
