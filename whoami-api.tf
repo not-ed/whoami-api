@@ -81,7 +81,7 @@ resource "azurerm_role_assignment" "role-assignment-whoami-api-functions-secrets
 resource "azurerm_role_assignment" "role-assignment-whoami-api-app-service-secrets-user" {
   scope                = data.azurerm_subscription.primary.id
   role_definition_name = "Key Vault Secrets User"
-  principal_id = azurerm_linux_web_app.linux-web-app-whoami-api.identity[0].principal_id
+  principal_id         = azurerm_linux_web_app.linux-web-app-whoami-api.identity[0].principal_id
 }
 
 
