@@ -78,6 +78,13 @@ resource "azurerm_role_assignment" "role-assignment-whoami-api-functions-secrets
   principal_id         = azurerm_function_app_flex_consumption.function-app-flex-consumption-whoami-api.identity[0].principal_id
 }
 
+resource "azurerm_role_assignment" "role-assignment-whoami-api-app-service-secrets-user" {
+  scope                = data.azurerm_subscription.primary.id
+  role_definition_name = "Key Vault Secrets User"
+  principal_id = azurerm_linux_web_app.linux-web-app-whoami-api.identity[0].principal_id
+}
+
+
 resource "azurerm_key_vault_secret" "key-vault-secret-whoami-api-github-username" {
   key_vault_id = azurerm_key_vault.key-vault-whoami-api.id
   name         = "Config-GitHub-Username"
@@ -197,6 +204,18 @@ resource "azurerm_linux_web_app" "linux-web-app-whoami-api" {
   service_plan_id               = azurerm_service_plan.service-plan-whoami-api.id
   https_only                    = true
   public_network_access_enabled = true
+
+  identity {
+    type = "SystemAssigned"
+  }
+
+  app_settings = {
+    "DatabaseName"       = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.key-vault-secret-whoami-api-database-name.versionless_id})"
+    "DatabaseServerName" = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.key-vault-secret-whoami-api-database-server-name.versionless_id})"
+    "DatabaseUsername"   = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.key-vault-secret-whoami-api-database-username.versionless_id})"
+    "DatabasePassword"   = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.key-vault-secret-whoami-api-database-password.versionless_id})"
+  }
+
   site_config {
     worker_count = 1
     always_on    = false
