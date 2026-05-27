@@ -1,9 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using WhoamiApi;
 using WhoamiApi.Events;
+using WhoamiApi.Events.Github;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<GithubEventsContext>(options => options.UseSqlServer(ConnectionStringFactory.GetConnectionString(builder.Configuration)));
+builder.Services.AddDbContext<GithubEventsDatabaseContext>(options => options.UseSqlServer(ConnectionStringFactory.GetConnectionString(builder.Configuration)));
 builder.Services.AddTransient<EventsService>();
 var app = builder.Build();
 

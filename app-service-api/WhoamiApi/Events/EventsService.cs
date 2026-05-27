@@ -1,34 +1,28 @@
+using WhoamiApi.Events.Github;
+
 namespace WhoamiApi.Events;
 
 public class EventsService
 {
-    public IResult GetEvents(){
+    private GithubEventsDatabaseContext _github;
+    public EventsService(GithubEventsDatabaseContext githubEventsDatabaseContext)
+    {
+        _github = githubEventsDatabaseContext;
+    }
+    
+    public IResult GetEvents()
+    {
+        var githubEvents = _github.Events.Take(5).OrderByDescending(x => x.CreatedAt).ToList();
+        
         return TypedResults.Ok(new GetEventsResponse()
         {
-            Events = new List<FeedItem>()
+            Events = githubEvents.Select(x => new FeedItem()
             {
-                new FeedItem()
-                {
-                    Color = "#1173e0",
-                    Label = "COMMIT",
-                    Body = "Made a commit to a repository on GitHub.",
-                    Time = DateTime.Now
-                },
-                new FeedItem()
-                {
-                    Color = "#f1ce12",
-                    Label = "STAR",
-                    Body = "Starred a repository on GitHub.",
-                    Time = DateTime.Now.AddDays(-1)
-                },
-                new FeedItem()
-                {
-                    Color = "#e01142",
-                    Label = "DELETED",
-                    Body = "Deleted a repository on GitHub.",
-                    Time = DateTime.Now.AddDays(-2)
-                }
-            }
+                Color = "#e01142",
+                Body = "test",
+                Label = x.Body.EventType,
+                Time = x.CreatedAt
+            }).ToList()
         });
     }
 }
