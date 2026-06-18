@@ -16,13 +16,7 @@ public class EventsService
         
         return TypedResults.Ok(new GetEventsResponse()
         {
-            Events = githubEvents.Select(x => new FeedItem()
-            {
-                Color = "#e01142",
-                Body = "test",
-                Label = x.Body.EventType,
-                Time = x.CreatedAt
-            }).ToList()
+            Events = githubEvents.Select(GithubFeedItemFactory.FromGithubEvent).ToList()
         });
     }
 }
