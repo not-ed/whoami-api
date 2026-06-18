@@ -2,6 +2,8 @@
 
 public class GithubFeedItemFactory
 {
+    private const string GITHUB_BASE_URL = "https://github.com/";
+    
     public static FeedItem FromGithubEvent(GithubEvent @event)
     {
         switch (@event.Body.EventType)
@@ -28,7 +30,7 @@ public class GithubFeedItemFactory
         return new FeedItem()
         {
             Color = "#f1ce12",
-            Body = $"Starred [{@event.Body.Repository.Name}]({@event.Body.Repository.Url}) on Github.",
+            Body = $"Starred [{@event.Body.Repository.Name}]({GITHUB_BASE_URL}{@event.Body.Repository.Name}) on Github.",
             Label = "STAR",
             Time = @event.CreatedAt
         };
