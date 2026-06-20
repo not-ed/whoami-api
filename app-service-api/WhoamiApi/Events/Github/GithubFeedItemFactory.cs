@@ -18,7 +18,7 @@ public class GithubFeedItemFactory
     {
         return new FeedItem()
         {
-            Color = "#cc11e0",
+            Color = "#1C1C1C",
             Body = $"Performed an {@event.Body.EventType} on Github.",
             Label = "MISSINGNO",
             Time = @event.CreatedAt
