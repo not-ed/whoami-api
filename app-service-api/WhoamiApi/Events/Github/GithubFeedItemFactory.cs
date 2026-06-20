@@ -8,10 +8,24 @@ public class GithubFeedItemFactory
     {
         switch (@event.Body.EventType)
         {
+            case "PublicEvent":
+                return MapPublicEvent(@event);
             case "WatchEvent":
                 return MapWatchEvent(@event);
         }
         return MapUnknownEvent(@event);
+    }
+
+    private static FeedItem MapPublicEvent(GithubEvent @event)
+    {
+        var repositoryUrl = GITHUB_BASE_URL + @event.Body.Repository.Name; 
+        return new  FeedItem()
+        {
+            Color = "#ededed",
+            Body = $"Made [{@event.Body.Repository.Name}]({repositoryUrl}) public on Github.",
+            Label = "UNVEILED",
+            Time = @event.CreatedAt
+        };
     }
 
     private static FeedItem MapUnknownEvent(GithubEvent @event)
