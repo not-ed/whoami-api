@@ -45,6 +45,10 @@ variable "github-username" {
   type = string
 }
 
+variable "anilist-username" {
+  type = string
+}
+
 resource "azurerm_resource_group" "resource-group-whoami-api" {
   name     = "whoami-api"
   location = "uksouth"
@@ -90,6 +94,13 @@ resource "azurerm_key_vault_secret" "key-vault-secret-whoami-api-github-username
   name         = "Config-GitHub-Username"
   value        = var.github-username
   content_type = "The GitHub username of the User whose events are being stored during ingestion"
+}
+
+resource "azurerm_key_vault_secret" "key-vault-secret-whoami-api-anilist-username" {
+  key_vault_id = azurerm_key_vault.key-vault-whoami-api.id
+  name         = "Config-AniList-Username"
+  value        = var.anilist-username
+  content_type = "The AniList username of the User whose media activity is being stored"
 }
 
 resource "azurerm_key_vault_secret" "key-vault-secret-whoami-api-database-name" {
@@ -269,6 +280,7 @@ resource "azurerm_function_app_flex_consumption" "function-app-flex-consumption-
     "DatabaseUsername"   = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.key-vault-secret-whoami-api-database-username.versionless_id})"
     "DatabasePassword"   = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.key-vault-secret-whoami-api-database-password.versionless_id})"
     "GitHubUsername"     = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.key-vault-secret-whoami-api-github-username.versionless_id})"
+    "AniListUsername"     = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.key-vault-secret-whoami-api-anilist-username.versionless_id})"
   }
 
   site_config {
