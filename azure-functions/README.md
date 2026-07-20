@@ -18,6 +18,7 @@ A `local.settings.json` file is also required in the root of this directory to d
 | Value | Description |
 |---|---|
 | `GitHubUsername` | The username of the GitHub user to capture events against.
+| `AniListUsername` | The AniList username of the User whose media activity will be captured.
 | `DatabaseServerName` | The full name / URL of a SQL Server Database (e.g. `*.database.windows.net`) to persist events to.
 | `DatabaseName` | The name of a SQL Server Database to persist events to.
 | `DatabaseUsername` | A Username to authenticate to the SQL Server Database under.
