@@ -1,5 +1,6 @@
 import requests
 from datetime import datetime
+import os
 
 class AniListMedia:
     def __init__(self, anilist_id, media_type, name, url, last_updated):
