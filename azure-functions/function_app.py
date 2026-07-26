@@ -2,17 +2,14 @@ import logging
 import azure.functions as func
 import os
 import requests
-import mssql_python
 import json
-from anilist.anilist import IngestCurrentCurrentAniListMediaList, AniListMedia
+from anilist.anilist import IngestCurrentCurrentAniListMediaList
+from database.connection_factory import OpenDatabaseConnection
+
 
 def IngestNewGithubEvents():
     github_username = os.getenv("GitHubUsername", None)
-    database_server_name = os.getenv("DatabaseServerName", None)
-    database_name = os.getenv("DatabaseName", None)
-    database_username = os.getenv("DatabaseUsername", None)
-    database_password = os.getenv("DatabasePassword", None)
-    if None in [github_username, database_server_name, database_name, database_username, database_password]:
+    if None in [github_username]:
         logging.info("Missing required configuration. Skipping run...")
         return
 
@@ -31,11 +28,9 @@ def IngestNewGithubEvents():
     logging.info(f"{len(pending_event_ids)} events retrieved:")
     logging.info(f"Pending Event IDs: {pending_event_ids}")
 
-    SQL_CONNECTION_STRING=f"Server={database_server_name};Database={database_name};Encrypt=yes;TrustServerCertificate=no;Authentication=SqlPassword;UID={database_username};PWD={database_password}"
-    logging.info(f"Connecting to {database_name} ({database_server_name}) as {database_username}...")
-    connection = mssql_python.connect(SQL_CONNECTION_STRING)
+    connection = OpenDatabaseConnection()
 
-    logging.info(f"Checking if Pending Event IDs already exist in {database_name}...")
+    logging.info(f"Checking if Pending Event IDs already exist...")
     fetch_existing_ids_query = connection.execute(f"SELECT id FROM github_events WHERE id IN {'('+','.join(str(i) for i in pending_event_ids)+')'};");
     for row in fetch_existing_ids_query.fetchall():
         if row[0] in pending_event_ids:
@@ -79,12 +74,8 @@ def anilist_titles_import(myTimer: func.TimerRequest) -> None:
 
 def IngestAniListTitles():
     # TODO: Duplicated configuration checking
-    database_server_name = os.getenv("DatabaseServerName", None)
-    database_name = os.getenv("DatabaseName", None)
-    database_username = os.getenv("DatabaseUsername", None)
-    database_password = os.getenv("DatabasePassword", None)
     anilist_username = os.getenv("AniListUsername", None)
-    if None in [database_server_name, database_name, database_username, database_password, anilist_username]:
+    if None in [anilist_username]:
         logging.info("Missing required configuration. Skipping run...")
         return
     
@@ -94,10 +85,7 @@ def IngestAniListTitles():
         return
     logging.info(f"Retrieved {len(current_titles)} titles from AniList.")
     
-    # TODO: duplicated connection string between functions
-    SQL_CONNECTION_STRING=f"Server={database_server_name};Database={database_name};Encrypt=yes;TrustServerCertificate=no;Authentication=SqlPassword;UID={database_username};PWD={database_password}"
-    logging.info(f"Connecting to {database_name} ({database_server_name}) as {database_username}...")
-    connection = mssql_python.connect(SQL_CONNECTION_STRING)
+    connection = OpenDatabaseConnection()
 
     fetch_existing_title_ids_query = connection.execute(f"SELECT id FROM anilist_titles WHERE id IN {'('+','.join(str(title.anilist_id) for title in current_titles)+')'};");
     existing_title_ids = [row[0] for row in fetch_existing_title_ids_query.fetchall()]
