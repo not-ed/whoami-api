@@ -1,15 +1,13 @@
 import logging
 import mssql_python
 import os
+from settings import config
 
 def OpenDatabaseConnection():
-    database_server_name = os.getenv("DatabaseServerName", None)
-    database_name = os.getenv("DatabaseName", None)
-    database_username = os.getenv("DatabaseUsername", None)
-    database_password = os.getenv("DatabasePassword", None)
-
-    if None in [database_server_name, database_name, database_username, database_password]:
-        logging.error("One or more environment variables for database connectivity are missing. This will likely fail.")
+    database_server_name = config.GetEnvironmentVariable("DatabaseServerName")
+    database_name = config.GetEnvironmentVariable("DatabaseName")
+    database_username = config.GetEnvironmentVariable("DatabaseUsername")
+    database_password = config.GetEnvironmentVariable("DatabasePassword")
 
     logging.info(f"Connecting to {database_name} ({database_server_name}) as {database_username}...")
 

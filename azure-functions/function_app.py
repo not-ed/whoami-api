@@ -5,13 +5,10 @@ import requests
 import json
 from anilist.anilist import IngestCurrentCurrentAniListMediaList
 from database.connection_factory import OpenDatabaseConnection
-
+from settings import config
 
 def IngestNewGithubEvents():
-    github_username = os.getenv("GitHubUsername", None)
-    if None in [github_username]:
-        logging.info("Missing required configuration. Skipping run...")
-        return
+    github_username = config.GetEnvironmentVariable("GitHubUsername")
 
     logging.info(f"Fetching public GitHub events for {github_username}...")
     events_response = requests.get(f"https://api.github.com/users/{github_username}/events", headers={"X-GitHub-Api-Version": "2026-03-10"})
@@ -73,12 +70,6 @@ def anilist_titles_import(myTimer: func.TimerRequest) -> None:
 
 
 def IngestAniListTitles():
-    # TODO: Duplicated configuration checking
-    anilist_username = os.getenv("AniListUsername", None)
-    if None in [anilist_username]:
-        logging.info("Missing required configuration. Skipping run...")
-        return
-    
     current_titles = IngestCurrentCurrentAniListMediaList()
     if len(current_titles) == 0:
         logging.info(f"No titles found from AniList. Skipping run...")

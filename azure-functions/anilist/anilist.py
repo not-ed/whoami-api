@@ -1,6 +1,7 @@
 import requests
 from datetime import datetime
 import os
+from settings import config
 
 class AniListMedia:
     def __init__(self, anilist_id, media_type, name, url, last_updated):
@@ -39,7 +40,7 @@ def IngestCurrentCurrentAniListMediaList():
     """
 
     query_variables = {
-        "userName": os.getenv("AniListUsername", None),
+        "userName": config.GetEnvironmentVariable("AniListUsername"),
     }
 
     current_titles = []
