@@ -68,6 +68,14 @@ def anilist_titles_import(myTimer: func.TimerRequest) -> None:
     logging.info('AniList Title Import Initiated.')
     IngestAniListTitles()
 
+@app.route(route="approval/{approval_id}/allow", auth_level=func.AuthLevel.ANONYMOUS)
+def allow_anilist_title(req: func.HttpRequest) -> func.HttpResponse:
+    return func.HttpResponse(f"TODO: approve {req.route_params.get("approval_id")}")
+
+@app.route(route="approval/{approval_id}/deny", auth_level=func.AuthLevel.ANONYMOUS)
+def deny_anilist_title(req: func.HttpRequest) -> func.HttpResponse:
+    return func.HttpResponse(f"TODO: deny {req.route_params.get("approval_id")}")
+
 
 def IngestAniListTitles():
     current_titles = IngestCurrentCurrentAniListMediaList()
