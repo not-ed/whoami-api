@@ -6,6 +6,7 @@ import json
 from anilist.anilist import IngestCurrentCurrentAniListMediaList
 from database.connection_factory import OpenDatabaseConnection
 from settings import config
+from uuid import UUID
 
 def IngestNewGithubEvents():
     github_username = config.GetEnvironmentVariable("GitHubUsername")
@@ -70,11 +71,42 @@ def anilist_titles_import(myTimer: func.TimerRequest) -> None:
 
 @app.route(route="approval/{approval_id}/allow", auth_level=func.AuthLevel.ANONYMOUS)
 def allow_anilist_title(req: func.HttpRequest) -> func.HttpResponse:
-    return func.HttpResponse(f"TODO: approve {req.route_params.get("approval_id")}")
+    try:
+        approval_id = UUID(req.route_params.get("approval_id"))
+    except ValueError: 
+        return func.HttpResponse(f"Requested ID is not a GUID", status_code=400)
+
+    with OpenDatabaseConnection() as connection:
+        fetch_approval_query = connection.execute(f"SELECT anilist_id FROM pending_anilist_approvals WHERE id = '{approval_id}';")
+        anilist_title_id = fetch_approval_query.fetchone()
+        approval_does_not_exist = anilist_title_id == None
+        if approval_does_not_exist:
+            return func.HttpResponse(f"Requested ID {approval_id} does not exist.", status_code=404)
+        connection.execute(f"UPDATE anilist_titles SET approved = 1 WHERE id = {anilist_title_id[0]};")
+        connection.execute(f"DELETE FROM pending_anilist_approvals WHERE id = '{approval_id}';")
+        connection.commit()
+    
+    return func.HttpResponse(f"Approved {approval_id}")
 
 @app.route(route="approval/{approval_id}/deny", auth_level=func.AuthLevel.ANONYMOUS)
 def deny_anilist_title(req: func.HttpRequest) -> func.HttpResponse:
-    return func.HttpResponse(f"TODO: deny {req.route_params.get("approval_id")}")
+    # TODO: duplicated (except approved status) between allow_anilist_titles
+    try:
+        approval_id = UUID(req.route_params.get("approval_id"))
+    except ValueError: 
+        return func.HttpResponse(f"Requested ID is not a GUID", status_code=400)
+
+    with OpenDatabaseConnection() as connection:
+        fetch_approval_query = connection.execute(f"SELECT anilist_id FROM pending_anilist_approvals WHERE id = '{approval_id}';")
+        anilist_title_id = fetch_approval_query.fetchone()
+        approval_does_not_exist = anilist_title_id == None
+        if approval_does_not_exist:
+            return func.HttpResponse(f"Requested ID {approval_id} does not exist.", status_code=404)
+        connection.execute(f"UPDATE anilist_titles SET approved = 0 WHERE id = {anilist_title_id[0]};")
+        connection.execute(f"DELETE FROM pending_anilist_approvals WHERE id = '{approval_id}';")
+        connection.commit()
+    
+    return func.HttpResponse(f"Denied {approval_id}")
 
 
 def IngestAniListTitles():
