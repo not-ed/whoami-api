@@ -49,6 +49,11 @@ variable "anilist-username" {
   type = string
 }
 
+variable "discord-notification-webhook-url" {
+  type = string
+  default = ""
+}
+
 resource "azurerm_resource_group" "resource-group-whoami-api" {
   name     = "whoami-api"
   location = "uksouth"
@@ -129,6 +134,13 @@ resource "azurerm_key_vault_secret" "key-vault-secret-whoami-api-database-userna
   name         = "Config-DatabaseUsername"
   value        = var.database-administrator-username
   content_type = "The username used for connecting to the SQL Server"
+}
+
+resource "azurerm_key_vault_secret" "key-vault-secret-whoami-api-discord-notification-webhook-url" {
+  key_vault_id = azurerm_key_vault.key-vault-whoami-api.id
+  name         = "Config-DiscordNotificationWebhookUrl"
+  value        = var.discord-notification-webhook-url
+  content_type = "A Discord Webhook URL that will be used for sending notifications on AniList titles that require approval"
 }
 
 resource "azurerm_mssql_server" "mssql-server-whoami-api" {
@@ -281,6 +293,7 @@ resource "azurerm_function_app_flex_consumption" "function-app-flex-consumption-
     "DatabasePassword"   = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.key-vault-secret-whoami-api-database-password.versionless_id})"
     "GitHubUsername"     = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.key-vault-secret-whoami-api-github-username.versionless_id})"
     "AniListUsername"     = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.key-vault-secret-whoami-api-anilist-username.versionless_id})"
+    "DiscordNotificationWebhookUrl"     = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.key-vault-secret-whoami-api-discord-notification-webhook-url.versionless_id})"
   }
 
   site_config {
