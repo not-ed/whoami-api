@@ -108,6 +108,20 @@ def deny_anilist_title(req: func.HttpRequest) -> func.HttpResponse:
     
     return func.HttpResponse(f"Denied {approval_id}")
 
+@app.route(route="watchlist/current", auth_level=func.AuthLevel.ANONYMOUS, methods=["GET"])
+def get_current_title(req: func.HttpRequest) -> func.HttpResponse:
+    try:
+        with OpenDatabaseConnection() as connection:
+            fetch_latest_approved_title_query = connection.execute("SELECT TOP 1 name, title_type, url FROM anilist_titles WHERE approved = 1 ORDER BY updated_at DESC;")
+            latest_approved_title = fetch_latest_approved_title_query.fetchone()
+    except:
+        return func.HttpResponse(f"A database error occurred when attempting to retrieve the current title.", status_code=500)
+    
+    if latest_approved_title == None:
+            return func.HttpResponse("No titles found", status_code=404)
+    response = {'title':latest_approved_title[0], 'type':latest_approved_title[1], 'url':latest_approved_title[2]}
+    return func.HttpResponse(json.dumps(response), mimetype="application/json")
+
 
 def IngestAniListTitles():
     current_titles = IngestCurrentCurrentAniListMediaList()
