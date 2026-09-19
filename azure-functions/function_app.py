@@ -7,6 +7,8 @@ from anilist.anilist import IngestCurrentCurrentAniListMediaList
 from database.connection_factory import OpenDatabaseConnection
 from settings import config
 from uuid import UUID
+from notifications.discord import SendAniListTitleApprovalPrompt
+import io
 
 def IngestNewGithubEvents():
     github_username = config.GetEnvironmentVariable("GitHubUsername")
@@ -68,6 +70,14 @@ def anilist_titles_import(myTimer: func.TimerRequest) -> None:
 
     logging.info('AniList Title Import Initiated.')
     IngestAniListTitles()
+
+@app.timer_trigger(schedule="0 0 * * * *", arg_name="myTimer", run_on_startup=False, use_monitor=False)
+def send_anilist_prompts(myTimer: func.TimerRequest) -> None:
+    if myTimer.past_due:
+        logging.info('The timer is past due!')
+
+    logging.info('AniList Prompt Submission Initiated.')
+    SendUnsentAniListApprovalPrompts()
 
 @app.route(route="approval/{approval_id}/allow", auth_level=func.AuthLevel.ANONYMOUS)
 def allow_anilist_title(req: func.HttpRequest) -> func.HttpResponse:
@@ -146,3 +156,46 @@ def IngestAniListTitles():
 
     connection.commit()
     connection.close()
+
+def SendUnsentAniListApprovalPrompts():
+    with OpenDatabaseConnection() as connection:
+        get_unsent_anilist_approvals_query = connection.execute("""
+        SELECT x.id, y.name, y.title_type, y.url
+        FROM pending_anilist_approvals AS x
+        JOIN anilist_titles AS y ON y.id = x.anilist_id
+        WHERE approval_prompt_sent = 0;
+        """)
+        for title in get_unsent_anilist_approvals_query.fetchall():
+            SendAniListTitleApprovalPrompt(title[2], title[1], title[3], title[0])
+            connection.execute(f"UPDATE pending_anilist_approvals SET approval_prompt_sent = 1 WHERE id = '{title[0]}';")
+            connection.commit()
+
+
+@app.route(route="approval/{approval_id}", auth_level=func.AuthLevel.ANONYMOUS)
+def approval_page(req: func.HttpRequest) -> func.HttpResponse:
+    try:
+        approval_id = UUID(req.route_params.get("approval_id"))
+    except ValueError: 
+        return func.HttpResponse(f"Requested ID is not a GUID", status_code=400)
+
+    with OpenDatabaseConnection() as connection:
+        fetch_approval_query = connection.execute(f"SELECT x.id, name, title_type, url FROM pending_anilist_approvals AS x JOIN anilist_titles AS y ON y.id = x.anilist_id WHERE x.id = '{approval_id}';")
+        anilist_title_id = fetch_approval_query.fetchone()
+        approval_does_not_exist = anilist_title_id == None
+        if approval_does_not_exist:
+            return func.HttpResponse(f"Requested ID {approval_id} does not exist.", status_code=404)
+
+    page = GetHTMLTemplate();
+    page = page.replace("{{TITLE}}", anilist_title_id[1])
+    page = page.replace("{{TYPE}}", anilist_title_id[2])
+    page = page.replace("{{TYPE_CLASS}}", str(anilist_title_id[2]).lower())
+    page = page.replace("{{ANILIST_URL}}", str(anilist_title_id[3]))
+    page = page.replace("{{APPROVE_URL}}", f"{anilist_title_id[0]}/allow")
+    page = page.replace("{{DENY_URL}}", f"{anilist_title_id[0]}/deny")
+
+    return func.HttpResponse(page, mimetype="text/html")
+
+def GetHTMLTemplate():
+    with io.open("content/approval-page.html") as file:
+        template = file.read();
+    return template

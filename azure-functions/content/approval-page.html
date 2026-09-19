@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Approve {{TITLE}}????</title>
+
+    <!-- inter font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        rel="stylesheet">
+</head>
+<style>
+    :root {
+        /* Catpuccin Mocha colors */
+        --catpuccin-mocha-rosewater: rgb(245, 224, 220);
+        --catpuccin-mocha-flamingo: rgb(242, 205, 205);
+        --catpuccin-mocha-pink: rgb(245, 194, 231);
+        --catpuccin-mocha-mauve: rgb(203, 166, 247);
+        --catpuccin-mocha-red: rgb(243, 139, 168);
+        --catpuccin-mocha-maroon: rgb(235, 160, 172);
+        --catpuccin-mocha-peach: rgb(250, 179, 135);
+        --catpuccin-mocha-yellow: rgb(249, 226, 175);
+        --catpuccin-mocha-green: rgb(166, 227, 161);
+        --catpuccin-mocha-teal: rgb(148, 226, 213);
+        --catpuccin-mocha-sky: rgb(137, 220, 235);
+        --catpuccin-mocha-sapphire: rgb(116, 199, 236);
+        --catpuccin-mocha-blue: rgb(137, 180, 250);
+        --catpuccin-mocha-lavender: rgb(180, 190, 254);
+        --catpuccin-mocha-text: rgb(205, 214, 244);
+        --catpuccin-mocha-subtext-1: rgb(186, 194, 222);
+        --catpuccin-mocha-subtext-0: rgb(166, 173, 200);
+        --catpuccin-mocha-overlay-2: rgb(147, 153, 178);
+        --catpuccin-mocha-overlay-1: rgb(127, 132, 156);
+        --catpuccin-mocha-overlay-0: rgb(108, 112, 134);
+        --catpuccin-mocha-surface-2: rgb(88, 91, 112);
+        --catpuccin-mocha-surface-1: rgb(69, 71, 90);
+        --catpuccin-mocha-surface-0: rgb(49, 50, 68);
+        --catpuccin-mocha-base: rgb(30, 30, 46);
+        --catpuccin-mocha-mantle: rgb(24, 24, 37);
+        --catpuccin-mocha-crust: rgb(17, 17, 27);
+    }
+
+    :root {
+        background: var(--catpuccin-mocha-base);
+        color: var(--catpuccin-mocha-subtext-0);
+        font-family: Inter;
+        font-weight: 300;
+    }
+
+    body {
+        display: flex;
+    }
+
+    h1 {
+        font-weight: 300;
+        margin-bottom: .5em;
+        color: var(--catpuccin-mocha-text);
+    }
+
+    .card {
+        margin: 0 auto;
+        border: 3px solid var(--catpuccin-mocha-crust);
+        background-image: linear-gradient(var(--catpuccin-mocha-mantle), var(--catpuccin-mocha-crust));
+        background-color: var(--catpuccin-mocha-mantle);
+        display: inline-block;
+        max-width: 40rem;
+        padding: 2.5rem;
+        border-radius: 16px;
+    }
+
+    .title {
+        color: var(--catpuccin-mocha-text);
+        font-weight: 600;
+        background-image: linear-gradient(var(--catpuccin-mocha-rosewater), var(--catpuccin-mocha-flamingo));
+        background-clip: text;
+        color: transparent;
+    }
+
+    .row {
+        display: flex;
+        justify-content: center;
+        gap: .5em;
+    }
+
+    .divider {
+        width: 100%;
+        height: 1px;
+        background-color: var(--catpuccin-mocha-surface-0);
+        margin: 1rem 0rem;
+    }
+
+    .type {
+        padding: .5em 1em;
+        border: 2px solid;
+        border-radius: 100px;
+        display: inline-block;
+        color: var(--catpuccin-mocha-text);
+        font-weight: 500;
+    }
+
+    .type.manga {
+        color: var(--catpuccin-mocha-peach);
+    }
+
+    .type.anime {
+        color: var(--catpuccin-mocha-mauve);
+    }
+
+    .anilist-link {
+        padding: .5em 1em;
+        border-radius: 8px;
+        display: inline-block;
+        background-image: linear-gradient(45deg, var(--catpuccin-mocha-blue), var(--catpuccin-mocha-sky));
+        color: var(--catpuccin-mocha-crust);
+        text-decoration: none;
+    }
+
+    .button {
+        width: 50%;
+        text-align: center;
+        border-radius: 8px;
+        padding: 1.5em 1em;
+        text-decoration: none;
+        color: var(--catpuccin-mocha-crust);
+    }
+
+    .button.approve {
+        background-image: linear-gradient(45deg, var(--catpuccin-mocha-green), var(--catpuccin-mocha-teal));
+    }
+
+    .button.deny {
+        background-image: linear-gradient(45deg, var(--catpuccin-mocha-red), var(--catpuccin-mocha-maroon));
+    }
+
+    .green {
+        background-image: linear-gradient(45deg, var(--catpuccin-mocha-green), var(--catpuccin-mocha-teal));
+        color: transparent;
+        background-clip: text;
+        font-weight: 500;
+    }
+
+    .red {
+        background-image: linear-gradient(45deg, var(--catpuccin-mocha-red), var(--catpuccin-mocha-maroon));
+        color: transparent;
+        background-clip: text;
+        font-weight: 500;
+    }
+</style>
+
+<body>
+    <div class="card">
+        <h1>Approve <span class="title">{{TITLE}}</span>?</h1>
+
+        <div class="row">
+            <div class="type {{TYPE_CLASS}}">{{TYPE}}</div>
+
+            <a class="anilist-link" href="ANILIST_URL}}" target="_blank">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5" />
+                    <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0z" />
+                </svg>
+
+                View on AniList
+            </a>
+        </div>
+
+        <div class="divider"></div>
+
+        <p>
+            <span class="green">Approving</span> this title will result in it being surfaced publicly through the whoami API.
+        </p>
+
+        <p>
+            <span class="red">Denying</span> this title will not delete it from the database, and can be re-approved later if needed.
+        </p>
+
+        <div class="divider"></div>
+
+        <div class="row">
+            <a class="approve button" href="{{APPROVE_URL}}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check2" viewBox="0 0 16 16">
+                    <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0" />
+                </svg>
+
+                APPROVE
+            </a>
+            <a class="deny button" href="{{DENY_URL}}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
+                </svg>
+
+                DENY
+            </a>
+        </div>
+
+    </div>
+</body>
+
+</html>
